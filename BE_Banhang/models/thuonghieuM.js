@@ -12,7 +12,7 @@ const ThuongHieu = sequelize.define(
     ten_thuong_hieu: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
+     
     },
     logo: {
       type: DataTypes.STRING(255),

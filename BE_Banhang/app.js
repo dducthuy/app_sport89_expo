@@ -13,7 +13,9 @@ const SanPhamR = require("./routes/sanphamR");
 const auth = require("./routes/authR");
 const danhmucR=require("./routes/danhmucR")
 const donhangR=require("./routes/donhhangR")
-
+const giohangR=require("./routes/giohangR")
+const khachHangR=require("./routes/khachhangR")
+const anhSpRoutes = require("./routes/anhsanphamR");
 const PORT = process.env.PORT;
 
 var app = express();
@@ -34,13 +36,15 @@ app.use(express.json());                          // parse JSON body
 app.use(express.urlencoded({ extended: true }));  // parse form-urlencoded
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // cho phép truy cập ảnh
 // Routes
 app.use("/api/san-pham", SanPhamR);
 app.use("/api/auth", auth);
 app.use("/api/danh-muc",danhmucR)
 app.use("/api/don-hang",donhangR)
-
+app.use("/api/gio-hang",giohangR)
+app.use("/api/khach-hang",khachHangR)
+app.use("/api/anhsp", anhSpRoutes);
 // catch 404
 app.use(function(req, res, next) {
   next(createError(404));
@@ -53,6 +57,7 @@ app.use(function(err, req, res, next) {
     message: err.message,
   });
 });
+
 
 // DB connect
 async function syncDatabase() {

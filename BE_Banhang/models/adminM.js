@@ -12,7 +12,7 @@ const Admin = sequelize.define('Admin', {
   ten_dang_nhap: {
     type: DataTypes.STRING(50),
     allowNull: false,
-    unique: true
+  
   },
   mat_khau: {
     type: DataTypes.STRING(255),

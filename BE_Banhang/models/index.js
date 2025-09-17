@@ -1,6 +1,6 @@
 const  sequelize  = require("../config/db");
 
-
+const AnhSP =require("./anhsanphamM")
 const DanhMuc = require("./danhmucM");
 const ThuongHieu = require("./thuonghieuM");
 const SanPham = require("./sanphamM");
@@ -22,7 +22,8 @@ const db = {
   ChiTietDonHang,
   Admin,
   MaGiamGia,
-  DanhGia
+  DanhGia,
+  AnhSP
 };
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

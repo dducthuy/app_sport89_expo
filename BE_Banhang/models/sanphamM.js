@@ -90,6 +90,13 @@ SanPham.associate = (models) => {
     onUpdate: 'CASCADE',
     as: 'gio_hang'
   });
+
+ SanPham.hasMany(models.AnhSP, {
+    foreignKey: "ma_san_pham",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+    as: "anh_sp",
+  });
 };
 
 module.exports=SanPham

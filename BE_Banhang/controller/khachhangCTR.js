@@ -1,6 +1,6 @@
-const KhachHang = require('../models/KhachHang');
+const KhachHang = require('../models/khachhangM');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
 const { Op } = require('sequelize');
 
 // Lấy tất cả khách hàng
@@ -100,141 +100,10 @@ exports.getById = async (req, res) => {
   }
 };
 
-// Đăng ký khách hàng mới
-exports.register = async (req, res) => {
-  try {
-    const {
-      ho_ten,
-      email,
-      mat_khau,
-      so_dien_thoai,
-      dia_chi,
-      ngay_sinh,
-      gioi_tinh
-    } = req.body;
 
-    // Validation
-    if (!ho_ten || !email || !mat_khau) {
-      return res.status(400).json({
-        success: false,
-        message: 'Thiếu thông tin bắt buộc: họ tên, email, mật khẩu'
-      });
-    }
 
-    // Kiểm tra email đã tồn tại
-    const existingKhachHang = await KhachHang.findOne({
-      where: { email: email.toLowerCase() }
-    });
 
-    if (existingKhachHang) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email đã được sử dụng'
-      });
-    }
 
-    // Mã hóa mật khẩu
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(mat_khau, saltRounds);
-
-    // Tạo khách hàng mới
-    const newKhachHang = await KhachHang.create({
-      ho_ten: ho_ten.trim(),
-      email: email.toLowerCase().trim(),
-      mat_khau: hashedPassword,
-      so_dien_thoai,
-      dia_chi,
-      ngay_sinh,
-      gioi_tinh: gioi_tinh || 'Nam'
-    });
-
-    // Trả về thông tin khách hàng (không bao gồm mật khẩu)
-    const { mat_khau: _, ...khachHangData } = newKhachHang.toJSON();
-
-    res.status(201).json({
-      success: true,
-      message: 'Đăng ký khách hàng thành công',
-      data: khachHangData
-    });
-  } catch (err) {
-    console.error('Lỗi khi đăng ký khách hàng:', err);
-    res.status(400).json({
-      success: false,
-      message: 'Lỗi khi đăng ký khách hàng',
-      error: err.message
-    });
-  }
-};
-
-// Đăng nhập khách hàng
-exports.login = async (req, res) => {
-  try {
-    const { email, mat_khau } = req.body;
-
-    // Validation
-    if (!email || !mat_khau) {
-      return res.status(400).json({
-        success: false,
-        message: 'Thiếu email hoặc mật khẩu'
-      });
-    }
-
-    // Tìm khách hàng theo email
-    const khachHang = await KhachHang.findOne({
-      where: { 
-        email: email.toLowerCase(),
-        trang_thai: true 
-      }
-    });
-
-    if (!khachHang) {
-      return res.status(401).json({
-        success: false,
-        message: 'Email hoặc mật khẩu không đúng'
-      });
-    }
-
-    // Kiểm tra mật khẩu
-    const isPasswordValid = await bcrypt.compare(mat_khau, khachHang.mat_khau);
-    
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Email hoặc mật khẩu không đúng'
-      });
-    }
-
-    // Tạo JWT token
-    const token = jwt.sign(
-      { 
-        id: khachHang.id, 
-        email: khachHang.email,
-        role: 'customer'
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Trả về thông tin khách hàng và token
-    const { mat_khau: _, ...khachHangData } = khachHang.toJSON();
-
-    res.status(200).json({
-      success: true,
-      message: 'Đăng nhập thành công',
-      data: {
-        khachHang: khachHangData,
-        token
-      }
-    });
-  } catch (err) {
-    console.error('Lỗi khi đăng nhập:', err);
-    res.status(500).json({
-      success: false,
-      message: 'Lỗi server khi đăng nhập',
-      error: err.message
-    });
-  }
-};
 
 // Cập nhật thông tin khách hàng
 exports.update = async (req, res) => {
