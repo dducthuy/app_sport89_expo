@@ -1,6 +1,7 @@
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { router } from "expo-router";
 import React, { useMemo, useState } from "react";
+
 import {
   ActivityIndicator,
   Alert,
@@ -86,7 +87,7 @@ export default function Register() {
   const handleRegister = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://172.20.10.6:4000/api/auth/register", {
+      const response = await fetch(`http://172.20.10:4000/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

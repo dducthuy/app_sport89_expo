@@ -1,22 +1,83 @@
-const SanPham = require("../models/sanphamM");
-const { DanhMuc, ThuongHieu } = require("../models"); // nếu bạn muốn include quan hệ
-const { Op } = require("sequelize");
+const { SanPham, DanhMuc, ThuongHieu, DanhGia,AnhSP } = require('../models');
+const { Op, Sequelize } = require("sequelize");
 
 exports.getAllSanPham = async (req, res) => {
+  try {
+    const sanPham = await SanPham.findAll({
+      include: [
+        { model: DanhMuc, as: 'danh_muc', attributes: ['id', 'ten_danh_muc'] },
+        { model: ThuongHieu, as: 'thuong_hieu', attributes: ['id', 'ten_thuong_hieu'] },
+        {
+          model: DanhGia,
+          as: 'danh_gia',
+          attributes: []
+        },
+        {
+          model:AnhSP,
+          as:'anh_sp',
+          attributes:['id','url']
+        }
+      ],
+      attributes: {
+        include: [
+          [Sequelize.fn('COUNT', Sequelize.col('danh_gia.id')), 'so_luot_danh_gia'],
+          [Sequelize.fn('AVG', Sequelize.col('danh_gia.so_sao')), 'trung_binh_sao']
+        ]
+      },
+      group: [
+        'SanPham.id',
+        'danh_muc.id',
+        'thuong_hieu.id',
+         'anh_sp.id'
+      ],
+    });
+
+    res.status(200).json(sanPham);
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách sản phẩm:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+exports.getSanPhamTheoDanhMuc = async (req, res) => {
   try {
+    const { id } = req.params; // id danh mục
+
     const sanPham = await SanPham.findAll({
+      where: { ma_danh_muc: id },
       include: [
-        { model: DanhMuc, as: 'danh_muc' },
-        { model: ThuongHieu, as: 'thuong_hieu' }
-      ]
+        { model: DanhMuc, as: 'danh_muc', attributes: ['id', 'ten_danh_muc'] },
+        { model: ThuongHieu, as: 'thuong_hieu', attributes: ['id', 'ten_thuong_hieu'] },
+        {
+          model: DanhGia,
+          as: 'danh_gia',
+          attributes: []
+        },
+        {
+          model: AnhSP,
+          as: 'anh_sp',
+          attributes: ['id', 'url']
+        }
+      ],
+      attributes: {
+        include: [
+          [Sequelize.fn('COUNT', Sequelize.col('danh_gia.id')), 'so_luot_danh_gia'],
+          [Sequelize.fn('AVG', Sequelize.col('danh_gia.so_sao')), 'trung_binh_sao']
+        ]
+      },
+      group: [
+        'SanPham.id',
+        'danh_muc.id',
+        'thuong_hieu.id',
+        'anh_sp.id'
+      ],
     });
+
     res.status(200).json(sanPham);
   } catch (error) {
+    console.error('Lỗi khi lấy sản phẩm theo danh mục:', error);
     res.status(500).json({ error: error.message });
   }
 };
-
-
 exports.createSanPham = async (req, res) => {
   try {
     const {

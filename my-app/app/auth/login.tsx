@@ -2,6 +2,8 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useState } from "react";
+
+
 import {
   ActivityIndicator,
   Alert,
@@ -53,11 +55,11 @@ export default function Login() {
 
     try {
       setIsLoading(true);
-      const response = await fetch("http://172.20.10.6:4000/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, mat_khau: password }),
-      });
+     const response = await fetch(`http://172.20.10:4000/api/auth/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email, mat_khau: password }),
+});
 
       const data = await response.json();
       if (!response.ok) {

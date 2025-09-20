@@ -21,12 +21,18 @@ const PORT = process.env.PORT;
 var app = express();
 
 // CORS
-app.use(cors({
-  origin: '*',
-  methods: ['GET','POST','PUT','DELETE'],
-  allowedHeaders: ['Content-Type','Authorization']
-}));
-
+app.use(
+  cors({
+    // In a production environment, you should specify the exact domain of your frontend.
+    // For development, reflecting the origin is a common practice, but be aware of security implications.
+    origin: (origin, callback) => {
+      callback(null, true);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 // Swagger
 swaggerDocs(app, PORT);
 
